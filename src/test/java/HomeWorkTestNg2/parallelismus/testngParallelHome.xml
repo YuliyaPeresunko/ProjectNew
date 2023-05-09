@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<suite name="AllTests Suite" parallel="classes" thread-count="2">
+    <test name="Parallel">
+        <classes>
+            <class name= "HomeWorkTestNg2.parallelismus.ParallelClass1"/>
+            <class name= "HomeWorkTestNg2.parallelismus.ParallelClass2"/>
+        </classes>
+    </test>
+</suite>
