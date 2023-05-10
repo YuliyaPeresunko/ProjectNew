@@ -1,10 +1,12 @@
 package HomeWorkTestNg2.Task5;
 
 import lesson5.MyWaiters;
+import lesson9.Assertions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Parameters;
@@ -19,13 +21,15 @@ Task5:
 
 public class Task5Parameters {
     WebDriver driver;
-    MyWaiters myWaiters;
+    //MyWaiters myWaiters;
 
     @BeforeClass
     public void driverInitialisation() {
+
         System.setProperty("webdriver.chrome.driver", "C:\\chromedriver_win32\\chromedriver.exe");
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--disable-notifications");
         driver = new ChromeDriver();
-        myWaiters = new MyWaiters(driver);
         driver.manage().window().maximize();
         driver.get("https://www.foxtrot.com.ua/");
         new MyWaiters(driver).waitPresenceOfElementReturn(By.xpath(
@@ -34,31 +38,31 @@ public class Task5Parameters {
 
     @Test
     @Parameters({"input"})
-    public void SearchTask4(String searchParams)  {
+    public void SearchTask4(String searchParams) {
 
+        MyWaiters myWaiters = new MyWaiters(driver);
+        Assertions asserts = new Assertions(driver);
         Actions actions = new Actions(driver);
-        new MyWaiters(driver).waitPresenceOfElementReturn(By.xpath("//input[@type='search']"));
+        new MyWaiters(driver).waitVisabilityOfWebElentReturn(By.xpath("//input[@type='search']"));
         WebElement searchField = driver.findElement(By.xpath("//input[@type='search']"));
-        String input = searchParams;
-        searchField.sendKeys(input);
+        String searchText = searchParams;
+        searchField.sendKeys( searchText);
         driver.findElement(By.xpath("//input[@value='Знайти']")).click();
 
-        // if(driver.findElement(By.xpath("//div[@class='page__title']/h1")).isDisplayed())
-        //{
-        WebElement resultSearch = myWaiters.waitPresenceOfElementReturn(By.xpath(
-                "//div[@class='page__title']/h1"));
-        String resultUpdate = resultSearch.getText().replace("Знайдено по запиту ", "");
-        assertTrue(resultUpdate.equals("«" +input+ "»"));//}
+        myWaiters.waitTitleContainsText("Знайдено по запиту ");
+        myWaiters.waitVisabilityOfWebElent(By.tagName("h1"));
+        if ((driver.findElement(By.tagName("h1"))).getText().contains("Знайдено по запиту ")) {
+            String resultOfReach = (driver.findElement(By.tagName("h1")))
+                    .getText().replace("Знайдено по запиту ", "");
+            assertTrue(resultOfReach.equals("«" + searchText + "»"));
 
-        //WebElement senseSearch = myWaiters.waitPresenceOfElementReturn(By.xpath("//div[@class='search-page__box-title']"));
-       /*if(driver.findElement(By.xpath("//div[@class='search-page__box-title']")).isDisplayed())
-       {
-            WebElement senseSearch = myWaiters.waitPresenceOfElementReturn(By.xpath(
-                    "//div[@class='search-page__box-title']"));
-        String resultUpdate2 = senseSearch.getText().replace("За запитом ", "");
-        String resultUpdate3=resultUpdate2.replace(" нічого не знайдено", "");
-        assertTrue(resultUpdate3.equals("«" +input+ "»"));}
-        //div[@class="search-page__box-title"] смысл*/
+            //  asserts.equalsOfStrings(resultOfReach, "«"+input+"»" );
+        } else if ((driver.findElement(By.tagName("h1"))).getText().contains("Результати пошуку")) {
+            String resultOfReach2 = (driver.findElement(By.xpath("//div[@class='search-page__box-title']/label")))
+                    .getText();
 
+            assertTrue(resultOfReach2.equals("«" +  searchText + "»"));
+            //asserts.equalsOfStrings(resultOfReach2, "«"+input+"»" );
+        }
     }
 }
